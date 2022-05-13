@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="VerletPhysics"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="clang"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Dev/C++/VerletPhysics/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="VerletPhysics">
+				<Option output="C:/Dev/C++/VerletPhysics/cmake-build-debug/VerletPhysics.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Dev/C++/VerletPhysics/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add directory="C:/Dev/C++/VerletPhysics/src"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 VerletPhysics"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="VerletPhysics/fast">
+				<Option output="C:/Dev/C++/VerletPhysics/cmake-build-debug/VerletPhysics.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Dev/C++/VerletPhysics/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="clang"/>
+				<Compiler>
+					<Add directory="C:/Dev/C++/VerletPhysics/src"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 VerletPhysics/fast"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Dev/C++/VerletPhysics/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Dev/C++/VerletPhysics/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Dev\C++\VerletPhysics\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Dev/C++/VerletPhysics/src/Main.cpp">
+			<Option target="VerletPhysics"/>
+		</Unit>
+		<Unit filename="C:/Dev/C++/VerletPhysics/src/gl.c">
+			<Option target="VerletPhysics"/>
+		</Unit>
+		<Unit filename="C:/Dev/C++/VerletPhysics/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
