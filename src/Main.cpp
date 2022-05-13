@@ -52,42 +52,26 @@ public:
         CircleShader = CreateShaderProgram(CircleVertexSource, CircleFragmentSource);
 
         // Background
-        //        Circles.emplace_back(Circle{
-        //            .Position     = { 0.0f, 0.0f },
-        //            .PrevPosition = { 0.0f, 0.0f },
-        //            .Radius       = 1.0f,
-        //            .Color        = { 0.4f, 0.4f, 0.4f },
-        //            .HasPhysics   = false,
-        //        });
-
         Circles.emplace_back(Circle{
-            .Position     = { 0.75f, 0.0f },
-            .PrevPosition = { 0.80f, 0.0f },
-            .Radius       = 0.1f,
-            .Mass         = 1.0f,
-            .Color        = { 0.8f, 0.2f, 0.1f },
-        });
-        Circles.emplace_back(Circle{
-            .Position     = { -0.75f, 0.0f },
-            .PrevPosition = { -0.80f, 0.0f },
-            .Radius       = 0.1f,
-            .Mass         = 1.0f,
-            .Color        = { 0.8f, 0.2f, 0.1f },
+            .Position     = { 0.0f, 0.0f },
+            .PrevPosition = { 0.0f, 0.0f },
+            .Radius       = 1.0f,
+            .Color        = { 0.4f, 0.4f, 0.4f },
+            .HasPhysics   = false,
         });
 
-        /*
-for (std::size_t i = 0; i < 50; i++) {
-    auto randFloat = []() {
-        return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-    };
-    Circle circle{};
-    circle.Radius       = 0.05f;//randFloat() * 0.1f;
-    circle.Position     = { randFloat() * 2.0f - 1.0f, randFloat() * 2.0f - 1.0f },
-    circle.PrevPosition = circle.Position - glm::vec2{ randFloat() * 2.0f - 1.0f, randFloat() * 2.0f - 1.0f } * 0.02f;
-    circle.Color        = { randFloat(), randFloat(), randFloat() };
-    Circles.emplace_back(circle);
-}
-         */
+        for (std::size_t i = 0; i < 50; i++) {
+            auto randFloat = []() {
+                return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+            };
+            Circle circle{};
+            circle.Radius       = randFloat() * 0.1f + 0.01f;
+            circle.Mass         = circle.Radius;
+            circle.Position     = { randFloat() - 0.5f, randFloat() - 0.5f },
+            circle.PrevPosition = circle.Position - glm::vec2{ randFloat() - 0.5f, randFloat() - 0.5f } * 0.02f;
+            circle.Color        = { randFloat(), randFloat(), randFloat() };
+            Circles.emplace_back(circle);
+        }
     }
 
     void DeInit() {
@@ -120,15 +104,10 @@ for (std::size_t i = 0; i < 50; i++) {
                         continue;
 
                     // Constraint
-                    //                    constexpr float ConstraintRadius = 1.0f;
-                    //                    if (float length = glm::length(circleA.Position); length >= ConstraintRadius -
-                    //                    circleA.Radius) {
-                    //                        circleA.Position /= length + circleA.Radius;
-                    //                    }
-                    if (circleA.Position.y < -1.0f + circleA.Radius) {
-                        circleA.Position.y = -1.0f + circleA.Radius;
+                    constexpr float ConstraintRadius = 1.0f;
+                    if (float length = glm::length(circleA.Position); length >= ConstraintRadius - circleA.Radius) {
+                        circleA.Position /= length + circleA.Radius;
                     }
-                    //                    std::cout << circleA.Position.x << ", " << circleA.Position.y << std::endl;
 
                     for (std::size_t j = i + 1; j < Circles.size(); j++) {
                         Circle& circleB = Circles[j];
@@ -139,11 +118,13 @@ for (std::size_t i = 0; i < 50; i++) {
                         if (float distance = glm::length(circleB.Position - circleA.Position); distance < minimumDistance) {
                             glm::vec2 aToB = glm::normalize(circleB.Position - circleA.Position);
                             if (circleA.Mass >= circleB.Mass) {
-                                circleA.Position -= aToB * (minimumDistance - distance) * (1.0f - (circleB.Mass / circleA.Mass));
-                                circleB.Position += aToB * (minimumDistance - distance) * (0.0f + (circleB.Mass / circleA.Mass));
+                                float ratio = circleB.Mass / circleA.Mass;
+                                circleA.Position -= aToB * (minimumDistance - distance) * (0.0f + ratio * 0.5f);
+                                circleB.Position += aToB * (minimumDistance - distance) * (1.0f - ratio * 0.5f);
                             } else {
-                                circleA.Position -= aToB * (minimumDistance - distance) * (1.0f - (circleA.Mass / circleB.Mass));
-                                circleB.Position += aToB * (minimumDistance - distance) * (0.0f + (circleA.Mass / circleB.Mass));
+                                float ratio = circleA.Mass / circleB.Mass;
+                                circleA.Position -= aToB * (minimumDistance - distance) * (1.0f - ratio * 0.5f);
+                                circleB.Position += aToB * (minimumDistance - distance) * (0.0f + ratio * 0.5f);
                             }
                         }
                     }
