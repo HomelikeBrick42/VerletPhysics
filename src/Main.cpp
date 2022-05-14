@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <Windows.h>
 
@@ -25,6 +26,12 @@
         return Defer{ lambda };                               \
     }()
 
+enum struct MouseButton {
+    Left,
+    Middle,
+    Right,
+};
+
 struct Circle {
     glm::vec2 Position;
     glm::vec2 PrevPosition;
@@ -37,17 +44,11 @@ struct Circle {
 class GameState {
 public:
     bool Running = true;
-    std::size_t Width;
-    std::size_t Height;
-    float time = 0.0f;
 
     void Init() {
         GLuint vertexArray;
         glGenVertexArrays(1, &vertexArray);
         glBindVertexArray(vertexArray);
-
-        float aspect     = static_cast<float>(Width) / static_cast<float>(Height);
-        ProjectionMatrix = glm::orthoLH(-aspect, aspect, -1.0f, 1.0f, -1.0f, 1.0f);
 
         CircleShader = CreateShaderProgram(CircleVertexSource, CircleFragmentSource);
 
@@ -66,7 +67,7 @@ public:
             };
             Circle circle{};
             circle.Radius       = randFloat() * 0.1f + 0.01f;
-            circle.Mass         = circle.Radius;
+            circle.Mass         = glm::pi<float>() * circle.Radius * circle.Radius;
             circle.Position     = { randFloat() - 0.5f, randFloat() - 0.5f },
             circle.PrevPosition = circle.Position - glm::vec2{ randFloat() - 0.5f, randFloat() - 0.5f } * 0.02f;
             circle.Color        = { randFloat(), randFloat(), randFloat() };
@@ -98,6 +99,10 @@ public:
 
             constexpr std::size_t ConstraintIterations = 8;
             for (std::size_t constraintIteration = 0; constraintIteration < ConstraintIterations; constraintIteration++) {
+                if (SelectedCircle != nullptr) {
+                    SelectedCircle->Position = GetMouseWorldPos() + SelectedCircleOffset;
+                }
+
                 for (std::size_t i = 0; i < Circles.size(); i++) {
                     Circle& circleA = Circles[i];
                     if (!circleA.HasPhysics)
@@ -152,11 +157,60 @@ public:
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
     }
+
+    void OnWindowResize(std::size_t width, std::size_t height) {
+        Width  = width;
+        Height = height;
+        glViewport(0, 0, width, height);
+        RecalculateProjectionMatrix();
+    }
+
+    glm::vec2 GetMouseWorldPos() {
+        glm::vec2 screenPos{ MouseX, Height - MouseY };
+        glm::mat4 viewProjection =
+            glm::inverse(ProjectionMatrix * glm::translate(glm::mat4(1.0f), glm::vec3(CameraPosition, 0.0f)));
+        return glm::vec2(viewProjection * glm::vec4(screenPos / glm::vec2{ Width, Height } * 2.0f - 1.0f, 0.0f, 1.0f));
+    }
+
+    void OnMouseButton(MouseButton button, bool pressed) {
+        if (button == MouseButton::Left) {
+            if (pressed) {
+                for (Circle& circle : Circles) {
+                    if (!circle.HasPhysics)
+                        continue;
+                    glm::vec2 difference = circle.Position - GetMouseWorldPos();
+                    if (glm::length(difference) <= circle.Radius) {
+                        SelectedCircle       = &circle;
+                        SelectedCircleOffset = difference;
+                        break;
+                    }
+                }
+            } else {
+                SelectedCircle = nullptr;
+            }
+        }
+    }
+
+    void OnMouseMove(std::size_t mouseX, std::size_t mouseY) {
+        MouseX = mouseX;
+        MouseY = mouseY;
+    }
 private:
+    std::size_t Width, Height;
+    float time = 0.0f;
+    std::size_t MouseX, MouseY;
     glm::mat4 ProjectionMatrix;
     glm::vec2 CameraPosition;
+    float CameraScale = 1;
     std::vector<Circle> Circles;
     GLuint CircleShader;
+    Circle* SelectedCircle = nullptr;
+    glm::vec2 SelectedCircleOffset;
+
+    void RecalculateProjectionMatrix() {
+        float aspect     = static_cast<float>(Width) / static_cast<float>(Height);
+        ProjectionMatrix = glm::orthoLH(-aspect * CameraScale, aspect * CameraScale, -CameraScale, CameraScale, -1.0f, 1.0f);
+    }
 
     static GLuint CreateShaderProgram(const char* vertexSource, const char* fragmentSource) {
         auto createShader = [](const char* source, GLenum type) -> GLuint {
@@ -250,8 +304,6 @@ int main(int, char**) {
     constexpr std::size_t InitialWindowHeight = 480;
 
     GameState state{};
-    state.Width  = InitialWindowWidth;
-    state.Height = InitialWindowHeight;
 
     HINSTANCE instance = GetModuleHandleA(nullptr);
     WNDCLASSEXA windowClass{
@@ -280,9 +332,40 @@ int main(int, char**) {
                     DWORD width  = windowRect.right - windowRect.left;
                     DWORD height = windowRect.bottom - windowRect.top;
                     if (width > 0 && height > 0) {
-                        state->Width  = width;
-                        state->Height = height;
+                        state->OnWindowResize(static_cast<std::size_t>(width), static_cast<std::size_t>(height));
                     }
+                } break;
+
+                case WM_LBUTTONDOWN:
+                case WM_MBUTTONDOWN:
+                case WM_RBUTTONDOWN:
+                case WM_LBUTTONUP:
+                case WM_MBUTTONUP:
+                case WM_RBUTTONUP: {
+                    bool pressed = message == WM_LBUTTONDOWN || message == WM_MBUTTONDOWN || message == WM_RBUTTONDOWN;
+                    MouseButton button;
+                    switch (message) {
+                        case WM_LBUTTONDOWN:
+                        case WM_LBUTTONUP: {
+                            button = MouseButton::Left;
+                        } break;
+
+                        case WM_MBUTTONDOWN:
+                        case WM_MBUTTONUP: {
+                            button = MouseButton::Middle;
+                        } break;
+
+                        case WM_RBUTTONDOWN:
+                        case WM_RBUTTONUP: {
+                            button = MouseButton::Right;
+                        } break;
+                    }
+                    state->OnMouseButton(button, pressed);
+                } break;
+
+                case WM_MOUSEMOVE: {
+                    POINTS point = MAKEPOINTS(lParam);
+                    state->OnMouseMove(point.x, point.y);
                 } break;
 
                 default: {

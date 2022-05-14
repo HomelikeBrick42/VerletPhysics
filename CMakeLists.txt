@@ -8,4 +8,5 @@ add_executable(
         src/Main.cpp
         src/gl.c)
 target_include_directories(VerletPhysics PRIVATE src)
-target_link_libraries(VerletPhysics OpenGL32)
+target_compile_options(VerletPhysics PRIVATE -D_CRT_SECURE_NO_WARNINGS)
+target_link_libraries(VerletPhysics PRIVATE OpenGL32)
